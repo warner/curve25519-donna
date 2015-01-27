@@ -1,6 +1,8 @@
 #! /usr/bin/python
 
-from distutils.core import setup, Extension
+import sys, os
+from distutils.core import setup, Extension, Command
+from distutils.util import get_platform
 import versioneer
 
 versioneer.VCS = "git"
@@ -29,6 +31,47 @@ This is a Python wrapper for the portable 'curve25519-donna' implementation
 of this algorithm, written by Adam Langley, hosted at
 http://code.google.com/p/curve25519-donna/
 """
+
+class Test(Command):
+    description = "run tests"
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def setup_path(self):
+        # copied from distutils/command/build.py
+        self.plat_name = get_platform()
+        plat_specifier = ".%s-%s" % (self.plat_name, sys.version[0:3])
+        self.build_lib = os.path.join("build", "lib"+plat_specifier)
+        sys.path.insert(0, self.build_lib)
+    def run(self):
+        self.setup_path()
+        import unittest
+        test = unittest.defaultTestLoader.loadTestsFromName("curve25519.test.test_curve25519")
+        runner = unittest.TextTestRunner(verbosity=2)
+        result = runner.run(test)
+        sys.exit(not result.wasSuccessful())
+cmdclass["test"] = Test
+
+class Speed(Command):
+    description = "run benchmark suite"
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def setup_path(self):
+        # copied from distutils/command/build.py
+        self.plat_name = get_platform()
+        plat_specifier = ".%s-%s" % (self.plat_name, sys.version[0:3])
+        self.build_lib = os.path.join("build", "lib"+plat_specifier)
+        sys.path.insert(0, self.build_lib)
+    def run(self):
+        self.setup_path()
+        from curve25519.test import test_speed
+        test_speed.main()
+cmdclass["speed"] = Speed
 
 setup(name="curve25519-donna",
       version=versioneer.get_version(),
