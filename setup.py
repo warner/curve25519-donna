@@ -3,8 +3,7 @@
 from subprocess import Popen, PIPE
 from distutils.core import setup, Extension
 
-version = Popen(["git", "describe", "--tags"], stdout=PIPE).communicate()[0]\
-          .strip().decode("utf8")
+version = "1.3" # from git rev 28772f37a4b8a57ab9439b9e79b19f9abee686da
 
 ext_modules = [Extension("curve25519._curve25519",
                          ["python-src/curve25519/curve25519module.c",
@@ -29,10 +28,22 @@ setup(name="curve25519-donna",
       version=version,
       description=short_description,
       long_description=long_description,
-      author="Brian Warner",
-      author_email="warner-pycurve25519-donna@lothar.com",
+      author="Adam Langley",
+      author_email="agl@imperialviolet.org",
+      url="http://code.google.com/p/curve25519-donna/",
+      maintainer="Brian Warner",
+      maintainer_email="warner-pycurve25519-donna@lothar.com",
       license="BSD",
       packages=["curve25519", "curve25519.test"],
       package_dir={"curve25519": "python-src/curve25519"},
       ext_modules=ext_modules,
+      classifiers=[
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 2",
+          "Programming Language :: Python :: 2.6",
+          "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.3",
+          "Programming Language :: Python :: 3.4",
+      ],
       )
